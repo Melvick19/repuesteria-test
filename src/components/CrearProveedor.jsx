@@ -5,6 +5,8 @@ import { etiquetasDisponibles } from '../data/etiquetas';
 
 const CrearProveedor = () => {
   const [showModal, setShowModal] = useState(false);
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [proveedorActual, setProveedorActual] = useState(null);
   const [errores, setErrores] = useState({
     nombre: false,
     apellido: false,
@@ -133,15 +135,28 @@ const CrearProveedor = () => {
     e.preventDefault();
     
     if (!validarCampos()) {
-      return; // Si hay errores, no continuar con la creación
+      return;
     }
 
-    const nuevoId = Math.max(...proveedores.map(p => p.id)) + 1;
-    setProveedores([...proveedores, {
-      ...nuevoProveedor,
-      id: nuevoId,
-      direccion: 'Dirección por defecto',
-    }]);
+    if (modoEdicion && proveedorActual) {
+      // Actualizar proveedor existente
+      setProveedores(proveedores.map(p => 
+        p.id === proveedorActual.id 
+          ? { ...nuevoProveedor, id: proveedorActual.id }
+          : p
+      ));
+    } else {
+      // Crear nuevo proveedor
+      const nuevoId = Math.max(...proveedores.map(p => p.id)) + 1;
+      setProveedores([...proveedores, {
+        ...nuevoProveedor,
+        id: nuevoId,
+        direccion: 'Dirección por defecto',
+        etiquetas: etiquetasSeleccionadas,
+        telefono: nuevoProveedor.apellido
+      }]);
+    }
+
     setShowModal(false);
     setNuevoProveedor({
       nombre: '',
@@ -151,12 +166,15 @@ const CrearProveedor = () => {
       etiquetas: [],
       reputacion: 5
     });
+    setEtiquetasSeleccionadas([]);
     setErrores({
       nombre: false,
       apellido: false,
       nombreTienda: false,
       rifCedula: false
     });
+    setModoEdicion(false);
+    setProveedorActual(null);
   };
 
   const handleDelete = (id) => {
@@ -164,8 +182,42 @@ const CrearProveedor = () => {
   };
 
   const handleEdit = (id) => {
-    // Implementar lógica de edición
-    console.log('Editar proveedor:', id);
+    const proveedor = proveedores.find(p => p.id === id);
+    if (proveedor) {
+      setProveedorActual(proveedor);
+      setNuevoProveedor({
+        nombre: proveedor.nombre,
+        apellido: proveedor.apellido,
+        nombreTienda: proveedor.nombreTienda,
+        rifCedula: proveedor.rifCedula,
+        etiquetas: proveedor.etiquetas,
+        reputacion: proveedor.reputacion
+      });
+      setEtiquetasSeleccionadas(proveedor.etiquetas);
+      setModoEdicion(true);
+      setShowModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setNuevoProveedor({
+      nombre: '',
+      apellido: '',
+      nombreTienda: '',
+      rifCedula: '',
+      etiquetas: [],
+      reputacion: 5
+    });
+    setEtiquetasSeleccionadas([]);
+    setErrores({
+      nombre: false,
+      apellido: false,
+      nombreTienda: false,
+      rifCedula: false
+    });
+    setModoEdicion(false);
+    setProveedorActual(null);
   };
 
   return (
@@ -251,13 +303,23 @@ const CrearProveedor = () => {
           </table>
         </div>
 
-        {/* Modal para crear proveedor */}
+        {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg w-full max-w-md max-h-[80vh] flex flex-col">
+            <div className="bg-white rounded-lg w-full max-w-lg max-h-[80vh] flex flex-col">
               {/* Encabezado fijo */}
               <div className="p-6 border-b border-gray-200">
-                <h3 className="text-xl font-bold">Crear Nuevo Proveedor</h3>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold">
+                    {modoEdicion ? 'Editar Proveedor' : 'Crear Nuevo Proveedor'}
+                  </h3>
+                  <button
+                    onClick={handleCloseModal}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
               {/* Contenido con scroll */}
@@ -371,7 +433,7 @@ const CrearProveedor = () => {
                   {/* Reputación con estrellas */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Reputación</label>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <button
                           type="button"
@@ -395,16 +457,16 @@ const CrearProveedor = () => {
                 <div className="flex justify-end gap-4">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    onClick={handleCloseModal}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                   >
                     Cancelar
                   </button>
                   <button
-                    onClick={handleSubmit}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
-                    Crear Proveedor
+                    {modoEdicion ? 'Actualizar' : 'Crear'}
                   </button>
                 </div>
               </div>
