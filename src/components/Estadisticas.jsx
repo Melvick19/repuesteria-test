@@ -48,7 +48,7 @@ export const Estadisticas = () => {
     labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
     datasets: [{
       label: 'Proveedores Activos',
-      data: [120, 125, 130, 135, 140, 145, 150],
+      data: [52, 62, 70, 86, 99, 118, 143],
       borderColor: 'rgba(99, 102, 241, 1)',
       backgroundColor: 'rgba(99, 102, 241, 0.2)',
       tension: 0.4,
