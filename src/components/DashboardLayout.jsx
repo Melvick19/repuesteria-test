@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   UserGroupIcon,
   TagIcon,
@@ -9,7 +9,9 @@ import {
   MoonIcon,
   ChartBarIcon,
   UserCircleIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  Cog6ToothIcon,
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -48,8 +50,28 @@ const navigation = [
 
 export const DashboardLayout = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const [showConfig, setShowConfig] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    // Simulamos un proceso de cierre de sesión
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsLoggingOut(false);
+    navigate('/login');
+  };
+
+  const configOptions = [
+    { name: 'Perfil', onClick: () => console.log('Perfil') },
+    { name: 'Notificaciones', onClick: () => console.log('Notificaciones') },
+    { name: 'Seguridad', onClick: () => console.log('Seguridad') },
+    { name: 'Idioma', onClick: () => console.log('Idioma') },
+    { name: 'Cerrar Sesión', onClick: () => setShowLogoutModal(true), className: 'text-red-600 hover:bg-red-50' }
+  ];
 
   return (
     <div className={`flex h-screen w-full ${
@@ -124,8 +146,8 @@ export const DashboardLayout = ({ children }) => {
             })}
           </nav>
 
-          {/* Botón de tema más grande */}
-          <div className={`p-3 border-t ${
+          {/* Botón de tema y configuración */}
+          <div className={`p-3 space-y-2 border-t ${
             isDarkMode ? 'border-gray-700' : 'border-gray-200'
           }`}>
             <button
@@ -145,9 +167,92 @@ export const DashboardLayout = ({ children }) => {
                 {isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}
               </span>
             </button>
+
+            {/* Botón de configuración */}
+            <div className="relative">
+              <button
+                onClick={() => setShowConfig(!showConfig)}
+                className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors ${
+                  isDarkMode 
+                    ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <div className="flex items-center">
+                  <Cog6ToothIcon className="h-5 w-5" />
+                  <span className={`${!isOpen ? 'hidden' : 'ml-2'} text-sm truncate`}>
+                    Configuración
+                  </span>
+                </div>
+                <ChevronUpIcon className={`h-4 w-4 transition-transform ${showConfig ? '' : 'rotate-180'}`} />
+              </button>
+
+              {/* Menú desplegable de configuración */}
+              {showConfig && isOpen && (
+                <div className={`absolute bottom-full left-0 w-full mb-1 rounded-lg shadow-lg ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-white'
+                } border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                  {configOptions.map((option, index) => (
+                    <button
+                      key={option.name}
+                      onClick={option.onClick}
+                      className={`w-full text-left px-4 py-2 text-sm ${
+                        index === 0 ? 'rounded-t-lg' : ''
+                      } ${
+                        index === configOptions.length - 1 ? 'rounded-b-lg' : ''
+                      } ${
+                        option.className || `${
+                          isDarkMode 
+                            ? 'hover:bg-gray-700 text-gray-300' 
+                            : 'hover:bg-gray-50 text-gray-700'
+                        }`
+                      } transition-colors`}
+                    >
+                      {option.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmación de cierre de sesión */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`bg-white rounded-lg p-6 max-w-sm w-full mx-4 ${
+            isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'
+          }`}>
+            <h3 className="text-lg font-medium mb-4">¿Estás seguro que deseas cerrar sesión?</h3>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center"
+              >
+                {isLoggingOut ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Cerrando sesión...
+                  </>
+                ) : (
+                  'Cerrar sesión'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Contenido principal con margen izquierdo dinámico */}
       <div className={`flex-1 ${isOpen ? 'ml-64' : 'ml-16'} transition-all duration-300 ${
@@ -174,7 +279,7 @@ export const DashboardLayout = ({ children }) => {
         <main className={`pt-16 min-h-screen ${
           isDarkMode ? 'bg-gray-900' : 'bg-white'
         }`}>
-          <div className="h-[calc(100vh-4rem)] p-6">
+          <div className={`h-[calc(100vh-4rem)] ${location.pathname === '/dashboard/asesor' ? 'pl-6 pt-6 pb-6' : 'p-6'}`}>
             {children}
           </div>
         </main>

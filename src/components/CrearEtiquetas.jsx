@@ -1,6 +1,54 @@
 import React, { useState } from 'react';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 
+// Datos dummy de uso de etiquetas
+const estadisticasEtiquetas = {
+  1: { // CHEVROLET
+    vendedoresUsando: 12,
+    usoEnSolicitudes: 458
+  },
+  2: { // TOYOTA
+    vendedoresUsando: 15,
+    usoEnSolicitudes: 623
+  },
+  3: { // FORD
+    vendedoresUsando: 8,
+    usoEnSolicitudes: 312
+  },
+  4: { // MAZDA
+    vendedoresUsando: 6,
+    usoEnSolicitudes: 245
+  },
+  5: { // FRENOS
+    vendedoresUsando: 25,
+    usoEnSolicitudes: 892
+  },
+  6: { // TREN DELANTERO
+    vendedoresUsando: 18,
+    usoEnSolicitudes: 567
+  },
+  7: { // MOTOR
+    vendedoresUsando: 22,
+    usoEnSolicitudes: 789
+  },
+  8: { // CORREAS
+    vendedoresUsando: 14,
+    usoEnSolicitudes: 432
+  },
+  9: { // EMPAQUES
+    vendedoresUsando: 16,
+    usoEnSolicitudes: 523
+  },
+  10: { // AUTOPERIQUITOS
+    vendedoresUsando: 10,
+    usoEnSolicitudes: 234
+  },
+  11: { // ELECTROAUTO
+    vendedoresUsando: 20,
+    usoEnSolicitudes: 678
+  }
+};
+
 export const CrearEtiquetas = () => {
   const [etiquetas, setEtiquetas] = useState([
     {
@@ -98,119 +146,127 @@ export const CrearEtiquetas = () => {
   };
 
   return (
-    <div className="w-full max-w-[1920px] aspect-[16/9] p-6">
+    <div className="p-6">
       <div className="bg-white rounded-lg shadow-xl p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Etiquetas de Proveedores</h2>
+          <h2 className="text-2xl font-bold">Etiquetas</h2>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <FaPlus className="mr-2" />
-            Crear Nueva Etiqueta
+            <FaPlus /> Crear Etiqueta
           </button>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Etiqueta
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Descripción
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Acciones
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendedores Usando</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uso en Solicitudes</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {etiquetas.map((etiqueta) => (
-                <tr key={etiqueta.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {etiqueta.nombre}
+                <tr key={etiqueta.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                      {etiqueta.nombre}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {etiqueta.descripcion}
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">{etiqueta.descripcion}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      onClick={() => handleEdit(etiqueta)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-3"
-                      title="Editar"
-                    >
-                      <FaEdit className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(etiqueta.id)}
-                      className="text-red-600 hover:text-red-900"
-                      title="Eliminar"
-                    >
-                      <FaTrash className="h-5 w-5" />
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="text-sm font-medium text-gray-900">
+                        {estadisticasEtiquetas[etiqueta.id].vendedoresUsando}
+                      </div>
+                      <div className="ml-2 text-xs text-gray-500">vendedores</div>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {Math.round((estadisticasEtiquetas[etiqueta.id].vendedoresUsando / 30) * 100)}% del total
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {estadisticasEtiquetas[etiqueta.id].usoEnSolicitudes.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-500">solicitudes</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(etiqueta)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <FaEdit className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(etiqueta.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <FaTrash className="h-5 w-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {/* Modal para crear nueva etiqueta */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Crear Nueva Etiqueta</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-                    Nombre de la Etiqueta
-                  </label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value={nuevaEtiqueta.nombre}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700">
-                    Descripción
-                  </label>
-                  <textarea
-                    id="descripcion"
-                    name="descripcion"
-                    value={nuevaEtiqueta.descripcion}
-                    onChange={handleInputChange}
-                    rows="3"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    Crear Etiqueta
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Modal para crear/editar etiqueta */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Crear Nueva Etiqueta</h3>
+            <form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  value={nuevaEtiqueta.nombre}
+                  onChange={(e) => setNuevaEtiqueta(prev => ({ ...prev, nombre: e.target.value }))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Descripción
+                </label>
+                <textarea
+                  value={nuevaEtiqueta.descripcion}
+                  onChange={(e) => setNuevaEtiqueta(prev => ({ ...prev, descripcion: e.target.value }))}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  rows="3"
+                />
+              </div>
+              <div className="flex justify-end gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Crear
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }; 

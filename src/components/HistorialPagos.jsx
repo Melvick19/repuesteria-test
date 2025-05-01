@@ -12,7 +12,8 @@ const HistorialPagos = () => {
       referencia: 'REF-001',
       fecha: '2024-03-15',
       hora: '14:30',
-      monto: 150.00
+      monto: 150.00,
+      concepto: 'Filtro de aceite y bujías para Toyota Corolla 2018'
     },
     {
       id: 2,
@@ -22,7 +23,8 @@ const HistorialPagos = () => {
       referencia: 'REF-002',
       fecha: '2024-03-15',
       hora: '15:45',
-      monto: 275.50
+      monto: 275.50,
+      concepto: 'Pastillas de freno delanteras para Chevrolet Aveo 2015'
     },
     {
       id: 3,
@@ -32,7 +34,8 @@ const HistorialPagos = () => {
       referencia: 'REF-003',
       fecha: '2024-03-16',
       hora: '09:15',
-      monto: 420.75
+      monto: 420.75,
+      concepto: 'Kit de embrague completo para Ford Fiesta 2017'
     },
     {
       id: 4,
@@ -42,7 +45,8 @@ const HistorialPagos = () => {
       referencia: 'REF-004',
       fecha: '2024-03-16',
       hora: '11:30',
-      monto: 180.25
+      monto: 180.25,
+      concepto: 'Alternador para Nissan Sentra 2019'
     },
     {
       id: 5,
@@ -52,7 +56,8 @@ const HistorialPagos = () => {
       referencia: 'REF-005',
       fecha: '2024-03-17',
       hora: '16:20',
-      monto: 350.00
+      monto: 350.00,
+      concepto: 'Discos y pastillas de freno para Honda Civic 2020'
     },
     {
       id: 6,
@@ -62,7 +67,8 @@ const HistorialPagos = () => {
       referencia: 'REF-006',
       fecha: '2024-03-17',
       hora: '10:45',
-      monto: 280.50
+      monto: 280.50,
+      concepto: 'Amortiguadores delanteros para Hyundai Tucson 2016'
     },
     {
       id: 7,
@@ -72,7 +78,8 @@ const HistorialPagos = () => {
       referencia: 'REF-007',
       fecha: '2024-03-18',
       hora: '13:15',
-      monto: 95.75
+      monto: 95.75,
+      concepto: 'Aceite sintético 5W-30 y filtro de aire para Mazda 3 2018'
     },
     {
       id: 8,
@@ -82,7 +89,8 @@ const HistorialPagos = () => {
       referencia: 'REF-008',
       fecha: '2024-03-18',
       hora: '15:30',
-      monto: 120.00
+      monto: 120.00,
+      concepto: 'Batería 12V 60Ah para Volkswagen Jetta 2017'
     },
     {
       id: 9,
@@ -92,7 +100,8 @@ const HistorialPagos = () => {
       referencia: 'REF-009',
       fecha: '2024-03-19',
       hora: '09:45',
-      monto: 450.25
+      monto: 450.25,
+      concepto: '4 neumáticos 205/55R16 para Kia Sportage 2019'
     },
     {
       id: 10,
@@ -102,7 +111,8 @@ const HistorialPagos = () => {
       referencia: 'REF-010',
       fecha: '2024-03-19',
       hora: '14:20',
-      monto: 320.50
+      monto: 320.50,
+      concepto: 'Faros delanteros LED para Renault Duster 2020'
     }
   ]);
 
@@ -174,6 +184,9 @@ const HistorialPagos = () => {
                   Fecha y Hora
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Concepto
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Monto
                 </th>
               </tr>
@@ -195,6 +208,9 @@ const HistorialPagos = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {pago.fecha} {pago.hora}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {pago.concepto}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatMonto(pago.monto)}

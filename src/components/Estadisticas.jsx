@@ -1,12 +1,51 @@
-import React, { useState } from 'react';
-import { FaChartLine, FaChartBar, FaChartPie, FaUsers, FaMoneyBillWave, FaTags } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaChartLine, FaChartBar, FaChartPie, FaUsers, FaMoneyBillWave, FaTags, FaCheckCircle, FaExclamationTriangle, FaServer } from 'react-icons/fa';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement } from 'chart.js';
 import { Pie, Line, Bar } from 'react-chartjs-2';
+import { BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
 export const Estadisticas = () => {
   const [periodo, setPeriodo] = useState('mes');
+  const [data, setData] = useState([
+    {
+      name: 'API IA Compradores',
+      latencia: 145,
+      solicitudes: 2850,
+      errores: 12,
+      status: 'online',
+      historial: {
+        latencias: [145, 152, 138, 142, 149, 155, 143],
+        solicitudes: [2850, 2720, 2930, 2840, 2760, 2890, 2800],
+        errores: [12, 8, 15, 10, 9, 11, 14]
+      }
+    },
+    {
+      name: 'API IA Proveedores',
+      latencia: 168,
+      solicitudes: 1920,
+      errores: 8,
+      status: 'online',
+      historial: {
+        latencias: [168, 172, 165, 170, 175, 162, 168],
+        solicitudes: [1920, 1850, 1980, 1890, 1940, 1870, 1900],
+        errores: [8, 6, 9, 7, 8, 10, 5]
+      }
+    },
+    {
+      name: 'API WhatsApp',
+      latencia: 98,
+      solicitudes: 5200,
+      errores: 3,
+      status: 'online',
+      historial: {
+        latencias: [98, 102, 95, 97, 100, 96, 99],
+        solicitudes: [5200, 5150, 5300, 5180, 5250, 5220, 5190],
+        errores: [3, 2, 4, 3, 2, 3, 2]
+      }
+    }
+  ]);
 
   const datosEstadisticas = {
     proveedores: {
@@ -122,11 +161,116 @@ export const Estadisticas = () => {
     }
   };
 
+  // Simular actualizaciones en tiempo real con variaciones más realistas
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setData(prevData => prevData.map(item => {
+        // Calcular nuevos valores basados en rangos realistas
+        const newLatencia = Math.max(50, Math.min(300, item.latencia + (Math.random() * 20 - 10)));
+        const newSolicitudes = item.solicitudes + Math.floor(Math.random() * 50);
+        const newErrores = Math.max(0, item.errores + (Math.random() > 0.85 ? 1 : Math.random() > 0.95 ? -1 : 0));
+        
+        // Actualizar historial
+        const newHistorial = {
+          latencias: [...item.historial.latencias.slice(1), newLatencia],
+          solicitudes: [...item.historial.solicitudes.slice(1), newSolicitudes],
+          errores: [...item.historial.errores.slice(1), newErrores]
+        };
+
+        return {
+          ...item,
+          latencia: Math.round(newLatencia),
+          solicitudes: newSolicitudes,
+          errores: newErrores,
+          status: Math.random() > 0.95 ? 'warning' : 'online',
+          historial: newHistorial
+        };
+      }));
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'online':
+        return '#25D366';
+      case 'warning':
+        return '#FFB800';
+      case 'offline':
+        return '#DC3545';
+      default:
+        return '#999';
+    }
+  };
+
+  const StatusIndicator = ({ status }) => (
+    <div className="flex items-center gap-2">
+      {status === 'online' ? (
+        <FaCheckCircle className="text-[#25D366]" />
+      ) : status === 'warning' ? (
+        <FaExclamationTriangle className="text-[#FFB800]" />
+      ) : (
+        <FaServer className="text-[#DC3545]" />
+      )}
+      <span className="capitalize">{status}</span>
+    </div>
+  );
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+          <h3 className="font-medium text-gray-900 mb-2">{label}</h3>
+          {payload.map((entry, index) => (
+            <p key={index} className="text-sm text-gray-600">
+              {entry.name}: {entry.value} {entry.name === 'Latencia' ? 'ms' : ''}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="w-full max-w-[1920px] aspect-[16/9] p-6">
       <div className="bg-white rounded-lg shadow-xl p-6">
+        {/* Estado de las APIs */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Estado de las APIs</h2>
+
+          {/* Status Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {data.map((api) => (
+              <div key={api.name} className="bg-white rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{api.name}</h3>
+                  <StatusIndicator status={api.status} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    Latencia: <span className="font-medium">{api.latencia}ms</span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Solicitudes: <span className="font-medium">{api.solicitudes}</span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Errores: <span className="font-medium text-red-500">{api.errores}</span>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Gráficas de APIs */}
+          <div className="space-y-8">
+          </div>
+        </div>
+
+        {/* Resto de las estadísticas */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Estadísticas</h2>
+          <h2 className="text-2xl font-bold">Estadísticas Generales</h2>
           <select
             value={periodo}
             onChange={(e) => setPeriodo(e.target.value)}
